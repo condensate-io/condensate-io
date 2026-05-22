@@ -1,8 +1,8 @@
-﻿<div align="center">
+<div align="center">
 
-# condensate
+# Condensate
 
-### The Canonical Memory Substrate for Autonomous AI
+### The Memory Operating System for AI Agents
 
 **Current AI Memory is Built for Search. Condensate is Built for Cognition.**
 
@@ -12,13 +12,11 @@
 [![License](https://img.shields.io/badge/Apache_2.0-D22128?style=for-the-badge&logo=apache&logoColor=white)](https://github.com/condensate-io/core/blob/main/LICENSE)
 
 [![PyPI](https://img.shields.io/pypi/v/condensate?style=flat-square&logo=python&logoColor=white&label=python)](https://pypi.org/project/condensate/)
-[![npm](https://img.shields.io/npm/v/@condensate/sdk?style=flat-square&logo=npm&logoColor=white&label=typescript)](https://www.npmjs.com/package/@condensate-io/sdk)
+[![npm](https://img.shields.io/npm/v/@condensate-io/sdk?style=flat-square&logo=npm&logoColor=white&label=typescript)](https://www.npmjs.com/package/@condensate-io/sdk)
 [![crates.io](https://img.shields.io/crates/v/condensate?style=flat-square&logo=rust&logoColor=white&label=rust)](https://crates.io/crates/condensate)
-[![npm MCP](https://img.shields.io/npm/v/@condensate/core?style=flat-square&logo=npm&logoColor=white&label=mcp)](https://www.npmjs.com/package/@condensate-io/core)
+[![npm MCP](https://img.shields.io/npm/v/@condensate-io/core?style=flat-square&logo=npm&logoColor=white&label=mcp)](https://www.npmjs.com/package/@condensate-io/core)
 
----
-
-*Open-source Memory Condensation Operating System — the cross-vendor memory substrate for AI agent swarms.*
+*Open-source Memory Operating System — the canonical, cross-vendor memory substrate for autonomous AI agents.*
 
 </div>
 
@@ -26,42 +24,65 @@
 
 ## The Problem
 
-AI agents today run on **broken memory**. Vector databases approximate similarity. Chat logs lose causality. Every vendor locks you into a proprietary silo. When agents collaborate, memories collide — and the last write wins.
+AI agents today are forced to build long-term memory on top of systems designed for document search.
 
-| Failure Mode | Root Cause | What Gets Lost |
-|:---|:---|:---|
-| 🔴 **Contradiction Blindness** | Vector DBs return "similar" — not "true" | Factual consistency |
-| 🔴 **Lost Causality** | Flat text has no causal structure | *Why* something was learned |
-| 🔴 **Vendor Lock-In** | Proprietary memory APIs | Portability & data sovereignty |
-| 🔴 **Concurrency Failures** | Last-Write-Wins across agents | Deterministic multi-agent merge |
+- Vector databases return contradictory chunks.
+- Flat logs lose causality and provenance.
+- Proprietary memory APIs trap cognitive data.
+- Last-Write-Wins destroys nuanced multi-agent state.
 
----
-
-## How Condensate Fixes It
-
-Condensate shifts AI memory from *"approximating similarity in a vector space"* to *"traversing a verifiable, multi-agent causal graph."*
-
-| Capability | Technology | Why It Matters |
-|:---|:---|:---|
-|  **Verifiable Provenance** | Cryptographically-Signed Merkle-DAGs | Every memory has a tamper-proof chain of origin |
-|  **Deterministic Multi-Agent Merge** | CRDTs (Conflict-Free Replicated Data Types) | N agents, zero conflicts, guaranteed convergence |
-|  **Active Learning** | Synapse Engine — Hebbian Learning | Neurons that fire together, wire together |
-|  **Cross-Vendor Interop** | Vendor-agnostic substrate | OpenAI + Anthropic + local model = one shared brain |
-|  **Data Sovereignty** | Local-first, self-hosted | Your data never leaves your infrastructure |
+**The result:** agents that hallucinate, forget, and cannot explain why they believe what they believe.
 
 ---
 
-##  Get Started in 60 Seconds
+## What Condensate Changes
+
+Condensate shifts AI memory from *"similarity search over text"* to a *verifiable, multi-agent causal graph*:
+
+- **Structured Memory Ontology** — condenses raw events into typed Entities, Assertions, Relations, Events, Learnings, and Policies.
+- **Cryptographic Provenance** — wraps memory assertions with signed proof envelopes and input hashes.
+- **Active Learning** — builds weighted semantic links and consolidates dense clusters into higher-order knowledge.
+- **Deterministic Multi-Agent Concurrency** — uses CRDT-based merge semantics for safe parallel updates.
+- **Vendor Independence** — works across OpenAI-compatible providers and MCP-compatible agent hosts.
+
+---
+
+## Architecture at a Glance
+
+```
+Raw Input (Chat / Docs / API)
+        │
+        ▼
+   [Ingress Agent]  ──── stores EpisodicItem + vector embedding
+        │
+        ▼
+   [Condenser]      ──── NER → LLM Extraction → Entity Canonicalization
+        │                → Assertion Consolidation → Edge Synthesis
+        ▼
+   [Synapse Engine] ──── Multi-Signal Scoring → Cluster Detection
+        │                → LLM High-Fidelity Consolidation
+        ▼
+   [Knowledge Graph] ─── Entities, Assertions, Relations (Postgres)
+        │
+        ▼
+   [Memory Router]  ──── Vector search + Graph traversal + Hebbian updates
+        │
+        ▼
+   [MCP / API]      ──── Agents, SDKs, Admin Dashboard
+```
+
+---
+
+## Get Started in 60 Seconds
 
 ```bash
-git clone https://github.com/condensate-io/core && cd core
+git clone https://github.com/condensate-io/core
+cd core
 cp .env.example .env
 ./start.sh
 ```
 
-> **That's it.** Core API on `:8000` · Admin Dashboard on `:3010` · Qdrant on `:6333` · Ollama on `:11434`
-
-Then connect from any SDK:
+Then connect with the Python SDK:
 
 ```python
 from condensate import CondensateClient
@@ -69,72 +90,55 @@ from condensate import CondensateClient
 client = CondensateClient("http://localhost:8000", "sk-your-key")
 client.store_memory(content="User prefers dark mode.", type="episodic")
 result = client.retrieve("What are the user's preferences?")
+print(result["answer"])
 ```
 
 ---
 
-##  SDKs
+## SDKs
 
-Install the SDK for your stack — or connect any MCP-compatible agent:
-
-```bash
-pip install condensate                    # Python
-npm install @condensate/sdk               # TypeScript
-cargo add condensate                      # Rust
-go get github.com/condensate/condensate-go-sdk  # Go
-npx -y @condensate/core                   # MCP Bridge (Claude, Cursor, Windsurf)
-```
+| SDK | Install | Docs |
+|---|---|---|
+| Python | `pip install condensate` | [sdks/python](https://github.com/condensate-io/core/tree/main/sdks/python) |
+| TypeScript | `npm install @condensate-io/sdk` | [sdks/ts](https://github.com/condensate-io/core/tree/main/sdks/ts) |
+| MCP Bridge | `npx -y @condensate-io/core` | [sdks/mcp-bridge](https://github.com/condensate-io/core/tree/main/sdks/mcp-bridge) |
+| Rust | `cargo add condensate` | [sdks/rust](https://github.com/condensate-io/core/tree/main/sdks/rust) |
+| Go | `go get github.com/condensate/condensate-go-sdk` | [sdks/go](https://github.com/condensate-io/core/tree/main/sdks/go) |
 
 ---
 
-##  Architecture at a Glance
+## Ecosystem Compatibility
 
-```
-Raw Input (Chat / Docs / API)
-        │
-        ▼
-   Ingress Agent ────── episodic memory + vector embedding
-        │
-        ▼
-   Condenser ────────── NER → extraction → canonicalization → consolidation
-        │
-        ▼
-   Synapse Engine ───── multi-signal scoring → Hebbian learning → clustering
-        │
-        ▼
-   Knowledge Graph ──── entities, assertions, relations (Postgres)
-        │
-        ▼
-   Memory Router ────── vector search + graph traversal + Hebbian updates
-        │
-        ▼
-   MCP / API ────────── agents, SDKs, admin dashboard
-```
+- **Model Providers:** OpenAI, Anthropic, Azure OpenAI, Google Gemini, Mistral
+- **Local Inference:** Ollama, LM Studio, LocalAI
+- **Agent Frameworks:** LangChain, LlamaIndex, AutoGen, CrewAI
+- **Agent Hosts:** Claude Desktop, Cursor, Windsurf, Codeium
 
 ---
 
-##  Ecosystem
+## Wiki Navigation
 
-Condensate is **vendor-agnostic by design**. It works with:
-
-**Model Providers** — OpenAI · Anthropic · Azure OpenAI · Google Gemini · Mistral
-**Local Inference** — Ollama · LM Studio · LocalAI
-**Agent Frameworks** — LangChain · LlamaIndex · AutoGen · CrewAI
-**Agent Hosts** — Claude Desktop · Cursor · Windsurf · Codeium
+| Page | Description |
+|------|-------------|
+| [The Problem](https://github.com/condensate-io/core/wiki/The-Problem) | Why current AI memory architectures fail |
+| [Architecture](https://github.com/condensate-io/core/wiki/Architecture) | Merkle-DAGs, CRDTs, Condenser pipeline, Proof Envelopes |
+| [Synapse Engine](https://github.com/condensate-io/core/wiki/Synapse-Engine) | Hebbian learning and memory consolidation |
+| [SDKs and Integration](https://github.com/condensate-io/core/wiki/SDKs-and-Integration) | SDK and MCP integration reference |
+| [Getting Started](https://github.com/condensate-io/core/wiki/Getting-Started) | Setup and first ingestion walkthrough |
+| [Security and Threat Model](https://github.com/condensate-io/core/wiki/Security-and-Threat-Model) | Guardrails, provenance, and tenant isolation |
+| [FAQ](https://github.com/condensate-io/core/wiki/FAQ) | Common questions |
 
 ---
 
-##  Get Involved
-
-<div align="center">
+## Links
 
 | | |
-|:---:|:---:|
-|  [**Documentation**](https://github.com/condensate-io/core#readme) |  [**Issues**](https://github.com/condensate-io/core/issues) |
-|  [**Contributing Guide**](https://github.com/condensate-io/core/blob/main/CONTRIBUTING.md) |  [**Discussions**](https://github.com/condensate-io/core/discussions) |
-|  [**Security Policy**](https://github.com/condensate-io/core/blob/main/SECURITY.md) |  [**Star the repo**](https://github.com/condensate-io/core) |
-
-</div>
+|---|---|
+| **Website** | [https://www.condensate.io](https://www.condensate.io) |
+| **Core Repository** | [https://github.com/condensate-io/core](https://github.com/condensate-io/core) |
+| **Core Wiki** | [https://github.com/condensate-io/core/wiki](https://github.com/condensate-io/core/wiki) |
+| **LinkedIn** | [https://www.linkedin.com/company/condensate-io/](https://www.linkedin.com/company/condensate-io/) |
+| **License** | Apache 2.0 |
 
 ---
 
@@ -143,7 +147,5 @@ Condensate is **vendor-agnostic by design**. It works with:
 **Standardizing the brain of AI agents.**
 
 🇦🇺 Built in Melbourne, Australia · Open source · Apache 2.0
-
-[![Star History](https://img.shields.io/github/stars/condensate-io/core?style=social)](https://github.com/condensate-io/core)
 
 </div>
