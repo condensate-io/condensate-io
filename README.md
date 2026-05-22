@@ -12,9 +12,9 @@
 [![License](https://img.shields.io/badge/Apache_2.0-D22128?style=for-the-badge&logo=apache&logoColor=white)](https://github.com/condensate-io/core/blob/main/LICENSE)
 
 [![PyPI](https://img.shields.io/pypi/v/condensate?style=flat-square&logo=python&logoColor=white&label=python)](https://pypi.org/project/condensate/)
-[![npm](https://img.shields.io/npm/v/@condensate/sdk?style=flat-square&logo=npm&logoColor=white&label=typescript)](https://www.npmjs.com/package/@condensate/sdk)
+[![npm](https://img.shields.io/npm/v/@condensate-io/sdk?style=flat-square&logo=npm&logoColor=white&label=typescript)](https://www.npmjs.com/package/@condensate-io/sdk)
 [![crates.io](https://img.shields.io/crates/v/condensate?style=flat-square&logo=rust&logoColor=white&label=rust)](https://crates.io/crates/condensate)
-[![npm MCP](https://img.shields.io/npm/v/@condensate/core?style=flat-square&logo=npm&logoColor=white&label=mcp)](https://www.npmjs.com/package/@condensate/core)
+[![npm MCP](https://img.shields.io/npm/v/@condensate-io/core?style=flat-square&logo=npm&logoColor=white&label=mcp)](https://www.npmjs.com/package/@condensate-io/core)
 
 *Open-source Memory Operating System — the canonical, cross-vendor memory substrate for autonomous AI agents.*
 
@@ -100,8 +100,8 @@ print(result["answer"])
 | SDK | Install | Docs |
 |---|---|---|
 | Python | `pip install condensate` | [sdks/python](https://github.com/condensate-io/core/tree/main/sdks/python) |
-| TypeScript | `npm install @condensate/sdk` | [sdks/ts](https://github.com/condensate-io/core/tree/main/sdks/ts) |
-| MCP Bridge | `npx -y @condensate/core` | [sdks/mcp-bridge](https://github.com/condensate-io/core/tree/main/sdks/mcp-bridge) |
+| TypeScript | `npm install @condensate-io/sdk` | [sdks/ts](https://github.com/condensate-io/core/tree/main/sdks/ts) |
+| MCP Bridge | `npx -y @condensate-io/core` | [sdks/mcp-bridge](https://github.com/condensate-io/core/tree/main/sdks/mcp-bridge) |
 | Rust | `cargo add condensate` | [sdks/rust](https://github.com/condensate-io/core/tree/main/sdks/rust) |
 | Go | `go get github.com/condensate/condensate-go-sdk` | [sdks/go](https://github.com/condensate-io/core/tree/main/sdks/go) |
 
