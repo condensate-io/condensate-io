@@ -44,9 +44,9 @@ Condensate is three complementary open-source projects:
 
 | Project | Role | Repository |
 |---|---|---|
-| **[Condensate Core](https://github.com/condensate-io/core)** | Memory Operating System — semantic graph, provenance, consolidation | [`condensate-io/core`](https://github.com/condensate-io/core) |
-| **[TurboQuant Qdrant](https://github.com/condensate-io/qdrant)** | Condensate's Qdrant fork — we integrated Google TurboQuant and built FastScan SIMD, QJL correction, and in-kernel thresholding | [`condensate-io/qdrant`](https://github.com/condensate-io/qdrant) |
-| **[Verified Agentic Development (VAD)](https://github.com/condensate-io/verified-agentic-development)** | Control-system model — intent, proof, policy, orchestration, audit | [`condensate-io/verified-agentic-development`](https://github.com/condensate-io/verified-agentic-development) |
+| **[Condensate Core](https://github.com/condensate-io/core)** | Memory Operating System - semantic graph, provenance, consolidation | [`condensate-io/core`](https://github.com/condensate-io/core) |
+| **[TurboQuant Qdrant](https://github.com/condensate-io/qdrant)** | Condensate's Qdrant fork - we integrated Google TurboQuant and built FastScan SIMD, QJL correction, and in-kernel thresholding | [`condensate-io/qdrant`](https://github.com/condensate-io/qdrant) |
+| **[Verified Agentic Development (VAD)](https://github.com/condensate-io/verified-agentic-development)** | Control-system model - intent, proof, policy, orchestration, audit | [`condensate-io/verified-agentic-development`](https://github.com/condensate-io/verified-agentic-development) |
 
 **Core** answers: *What does the agent know, and why?*  
 **TurboQuant Qdrant** answers: *How fast can we retrieve and score embeddings at scale?*  
@@ -81,17 +81,17 @@ Together they form a stack where vector retrieval, delivery evidence, and retros
 
 ---
 
-## Condensate Core — The Memory Operating System
+## Condensate Core - The Memory Operating System
 
 Current AI memory is built for search. Condensate Core is built for cognition.
 
 Condensate Core shifts AI memory from *"similarity search over text"* to a *verifiable, multi-agent causal graph*:
 
-- **Structured Memory Ontology** — condenses raw events into typed Entities, Assertions, Relations, Events, Learnings, and Policies.
-- **Cryptographic Provenance** — wraps memory assertions with signed proof envelopes and input hashes.
-- **Active Learning** — builds weighted semantic links and consolidates dense clusters into higher-order knowledge.
-- **Deterministic Multi-Agent Concurrency** — uses CRDT-based merge semantics for safe parallel updates.
-- **Vendor Independence** — works across OpenAI-compatible providers and MCP-compatible agent hosts.
+- **Structured Memory Ontology** - condenses raw events into typed Entities, Assertions, Relations, Events, Learnings, and Policies.
+- **Cryptographic Provenance** - wraps memory assertions with signed proof envelopes and input hashes.
+- **Active Learning** - builds weighted semantic links and consolidates dense clusters into higher-order knowledge.
+- **Deterministic Multi-Agent Concurrency** - uses CRDT-based merge semantics for safe parallel updates.
+- **Vendor Independence** - works across OpenAI-compatible providers and MCP-compatible agent hosts.
 
 ### Core Architecture
 
@@ -135,9 +135,33 @@ result = client.retrieve("What are the user's preferences?")
 print(result["answer"])
 ```
 
+### LoCoMo Benchmark Highlights
+
+Condensate Core is evaluated on **[LoCoMo](https://github.com/snap-research/locomo)** - 10 long multi-session conversations and ~2,000 QA pairs testing whether a memory system can answer correctly without resending full chat history. Full methodology and category tables: [benchmarks/results/locomo10_comparative_report.html](https://github.com/condensate-io/core/blob/main/benchmarks/results/locomo10_comparative_report.html).
+
+| Metric | Condensate | Full transcript | Industry reference |
+|---|---|---|---|
+| **Retrieval accuracy** | **85.7%** | 80.4% | ~92.5% overall QA |
+| **Tokens per question** | **2,329** | 20,476 | ~6,956 |
+| **Native answer accuracy** | 74.8% | 93.5% | - |
+
+**Production target:** ≥ 85% retrieval at &lt; 7,000 tokens per question - **met on retrieval accuracy and token budget**.
+
+Category strengths (retrieval, vs published industry reference):
+
+| Category | Industry ref. | Condensate | Full transcript |
+|---|---|---|---|
+| Open-domain | 76.0% | **95.2%** | 98.3% |
+| Temporal | 92.8% | **97.8%** | 86.0% |
+| Single-hop | 92.3% | 91.5% | 92.9% |
+| Multi-hop | 93.3% | 83.3% | 55.2% |
+| Adversarial | - | 55.6% | 40.1% |
+
+Condensate uses **assertion supersession** (retire contradicted facts with provenance) rather than add-only observation lists - ~**9×** fewer tokens than full transcript at comparable or better retrieval on open-domain and temporal questions. Reproduce locally: `make test-locomo-report` in the Core repo (Docker).
+
 ---
 
-## Verified Agentic Development — The Governance Loop
+## Verified Agentic Development - The Governance Loop
 
 VAD is a control-system model for enterprise software delivery under agentic acceleration. It treats delivery as a closed loop of **intent → proof → construction → verification → release → feedback**, with separation of duties between builder, verifier, and release guardian roles.
 
@@ -145,15 +169,15 @@ The current reference implementation is a **local Level 4 orchestrator**: an ope
 
 ### What VAD Implements Today
 
-- **Executable Intent Packages (EIP)** — structured intent, invariants, proof obligations, and evidence bundles.
-- **Verified agentic loop** — ask assessment, proof mapping, guarded execution, MEES effort scoring, and release gates.
-- **Local control-plane server** — lifecycle, readiness, SQLite event ledger, replay dashboard, and approval routing.
-- **Active orchestration** — durable work items, scheduler assignment, run/task state projection, stale-client recovery with optional auto-reassignment.
-- **Governed MCP gateway** — role-aware tool visibility, high-risk denial, client attribution, and redacted summaries over stdio and local HTTP JSON-RPC.
-- **Multi-client packages** — local connector artifacts for Codex, Claude Code, VS Code, Cursor, Windsurf, OpenCode, Generic MCP/A2A, and Antigravity fallback.
-- **Plugin operations** — review-only dry-runs, persisted inventory, local apply/uninstall/rollback writers, and event-derived dashboard status.
-- **Change control** — diff proposal persistence, verifier and release-guardian approval before sandboxed apply, operator intent records.
-- **Deterministic verification** — Docker test gate with 570+ passing tests and no paid model calls in default flows.
+- **Executable Intent Packages (EIP)** - structured intent, invariants, proof obligations, and evidence bundles.
+- **Verified agentic loop** - ask assessment, proof mapping, guarded execution, MEES effort scoring, and release gates.
+- **Local control-plane server** - lifecycle, readiness, SQLite event ledger, replay dashboard, and approval routing.
+- **Active orchestration** - durable work items, scheduler assignment, run/task state projection, stale-client recovery with optional auto-reassignment.
+- **Governed MCP gateway** - role-aware tool visibility, high-risk denial, client attribution, and redacted summaries over stdio and local HTTP JSON-RPC.
+- **Multi-client packages** - local connector artifacts for Codex, Claude Code, VS Code, Cursor, Windsurf, OpenCode, Generic MCP/A2A, and Antigravity fallback.
+- **Plugin operations** - review-only dry-runs, persisted inventory, local apply/uninstall/rollback writers, and event-derived dashboard status.
+- **Change control** - diff proposal persistence, verifier and release-guardian approval before sandboxed apply, operator intent records.
+- **Deterministic verification** - Docker test gate with 570+ passing tests and no paid model calls in default flows.
 
 VAD remains intentionally **local and operator-owned**. It is not a cloud control plane, managed marketplace, or automatic production deployment system unless you explicitly opt in outside the default reference boundary.
 
@@ -185,23 +209,23 @@ Key docs in the VAD repository:
 
 ### VAD + Core Together
 
-VAD generates structured delivery evidence — verification events, policy decisions, EIP compliance, and retrospective learnings. Condensate Core is the natural long-term store for that evidence as typed **Events** and **Learnings**, queryable across projects and agents.
+VAD generates structured delivery evidence - verification events, policy decisions, EIP compliance, and retrospective learnings. Condensate Core is the natural long-term store for that evidence as typed **Events** and **Learnings**, queryable across projects and agents.
 
 See the [Condensate Integration Guide](https://github.com/condensate-io/verified-agentic-development/blob/main/docs/condensate-integration.md) for wiring VAD's memory gateway to `CondensateClient`.
 
 ---
 
-## TurboQuant Qdrant — Condensate's Vector Retrieval Engine
+## TurboQuant Qdrant - Condensate's Vector Retrieval Engine
 
-[condensate-io/qdrant](https://github.com/condensate-io/qdrant) is **Condensate engineering work**: we forked Qdrant v1.18.2 and integrated Google's **TurboQuant** extreme quantization (4-bit, 2-bit, and 1-bit modes), then built the SIMD FastScan kernels, QJL residual correction, and in-kernel threshold filtering that drive the benchmark gains below. This is not upstream Qdrant — it is our performance path for agent-scale embedding retrieval.
+[condensate-io/qdrant](https://github.com/condensate-io/qdrant) is **Condensate engineering work**: we forked Qdrant v1.18.2 and integrated Google's **TurboQuant** extreme quantization (4-bit, 2-bit, and 1-bit modes), then built the SIMD FastScan kernels, QJL residual correction, and in-kernel threshold filtering that drive the benchmark gains below. This is not upstream Qdrant - it is our performance path for agent-scale embedding retrieval.
 
 ### What We Implemented
 
-- **FastScan block-transposed layout** — groups vectors into 32-vector blocks for AVX2 cache locality and coalesced memory loads.
-- **SIMD multi-query scoring** — parallel distance accumulation in 256-bit registers instead of scalar loops.
-- **QJL residual correction** — 1-bit Quantized Johnson–Lindenstrauss projection to recover quantization accuracy.
-- **SIMD thresholding and in-kernel filtering** — fuses priority-queue threshold checks into AVX2 kernels to reduce branch overhead during HNSW candidate evaluation.
-- **Dynamic density fallback** — protects sparse/random batch access patterns from block-scoring overhead by falling back to point-wise scoring when block density is low.
+- **FastScan block-transposed layout** - groups vectors into 32-vector blocks for AVX2 cache locality and coalesced memory loads.
+- **SIMD multi-query scoring** - parallel distance accumulation in 256-bit registers instead of scalar loops.
+- **QJL residual correction** - 1-bit Quantized Johnson–Lindenstrauss projection to recover quantization accuracy.
+- **SIMD thresholding and in-kernel filtering**  fuses priority-queue threshold checks into AVX2 kernels to reduce branch overhead during HNSW candidate evaluation.
+- **Dynamic density fallback** - protects sparse/random batch access patterns from block-scoring overhead by falling back to point-wise scoring when block density is low.
 
 ### Benchmark Highlights
 
@@ -215,7 +239,7 @@ Full methodology and tables live in [docs/BENCHMARKS.md](https://github.com/cond
 Representative dense results (latency vs baseline):
 
 | Dimension | Batch | Speedup |
-|---|---|---|
+|---|---|---|-
 | 128 | 32 | **1.82x** (−45% latency) |
 | 128 | 1024 | **1.61x** (−38% latency) |
 | 768 | 32 | **1.15x** (−13% latency) |
@@ -245,7 +269,7 @@ Key docs in the Qdrant fork:
 
 ### TurboQuant Qdrant + Core Together
 
-Condensate Core's memory router combines graph traversal with vector search. Our TurboQuant Qdrant fork is the performance path for embedding retrieval at scale — especially when collections use TurboQuant compression and workloads include dense plain-index scans or HNSW graph traversal with in-kernel threshold filtering.
+Condensate Core's memory router combines graph traversal with vector search. Our TurboQuant Qdrant fork is the performance path for embedding retrieval at scale - especially when collections use TurboQuant compression and workloads include dense plain-index scans or HNSW graph traversal with in-kernel threshold filtering.
 
 ---
 
@@ -304,6 +328,14 @@ Condensate Core's memory router combines graph traversal with vector search. Our
 
 ---
 
+## Reach out / Contact us
+
+For the latest updates — benchmarks, releases, integrations, and roadmap — **reach out on [LinkedIn](https://www.linkedin.com/company/condensate-io/)**.
+
+Our public GitHub repos are updated regularly, but they can trail our current work by a few iterations. If you want the most recent picture of what we are shipping, connect with us on LinkedIn.
+
+---
+
 ## Links
 
 | | |
@@ -313,7 +345,7 @@ Condensate Core's memory router combines graph traversal with vector search. Our
 | **Qdrant (TurboQuant fork)** | [https://github.com/condensate-io/qdrant](https://github.com/condensate-io/qdrant) |
 | **Verified Agentic Development** | [https://github.com/condensate-io/verified-agentic-development](https://github.com/condensate-io/verified-agentic-development) |
 | **Core Wiki** | [https://github.com/condensate-io/core/wiki](https://github.com/condensate-io/core/wiki) |
-| **LinkedIn** | [https://www.linkedin.com/company/condensate-io/](https://www.linkedin.com/company/condensate-io/) |
+| **LinkedIn** | [https://www.linkedin.com/company/condensate-io/](https://www.linkedin.com/company/condensate-io/) — best for latest updates and to reach the team |
 | **License** | Apache 2.0 |
 
 ---
