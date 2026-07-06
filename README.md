@@ -4,11 +4,12 @@
 
 ### Memory and Governance for Autonomous AI Agents
 
-**Condensate Core gives agents a verifiable memory substrate. Verified Agentic Development gives them a governed delivery loop.**
+**Condensate Core gives agents a verifiable memory substrate. Our TurboQuant-enabled Qdrant fork delivers optimized vector retrieval. Verified Agentic Development gives them a governed delivery loop.**
 
 [![Website](https://img.shields.io/badge/condensate.io-000000?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.condensate.io)
 [![GitHub](https://img.shields.io/badge/condensate--io/core-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/condensate-io/core)
 [![VAD](https://img.shields.io/badge/verified--agentic--development-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/condensate-io/verified-agentic-development)
+[![Qdrant](https://img.shields.io/badge/qdrant-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/condensate-io/qdrant)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/company/condensate-io/)
 [![License](https://img.shields.io/badge/Apache_2.0-D22128?style=for-the-badge&logo=apache&logoColor=white)](https://github.com/condensate-io/core/blob/main/LICENSE)
 
@@ -17,7 +18,7 @@
 [![crates.io](https://img.shields.io/crates/v/condensate?style=flat-square&logo=rust&logoColor=white&label=rust)](https://crates.io/crates/condensate)
 [![npm MCP](https://img.shields.io/npm/v/@condensate-io/core?style=flat-square&logo=npm&logoColor=white&label=mcp)](https://www.npmjs.com/package/@condensate-io/core)
 
-*Open-source infrastructure for agents that remember with provenance and ship with proof.*
+*Open-source infrastructure for agents that remember with provenance, retrieve with speed, and ship with proof.*
 
 </div>
 
@@ -39,17 +40,19 @@ AI agents today are forced to build long-term memory on top of systems designed 
 
 ## The Condensate Ecosystem
 
-Condensate is two complementary open-source projects:
+Condensate is three complementary open-source projects:
 
 | Project | Role | Repository |
 |---|---|---|
 | **[Condensate Core](https://github.com/condensate-io/core)** | Memory Operating System — semantic graph, provenance, consolidation | [`condensate-io/core`](https://github.com/condensate-io/core) |
+| **[TurboQuant Qdrant](https://github.com/condensate-io/qdrant)** | Condensate's Qdrant fork — we integrated Google TurboQuant and built FastScan SIMD, QJL correction, and in-kernel thresholding | [`condensate-io/qdrant`](https://github.com/condensate-io/qdrant) |
 | **[Verified Agentic Development (VAD)](https://github.com/condensate-io/verified-agentic-development)** | Control-system model — intent, proof, policy, orchestration, audit | [`condensate-io/verified-agentic-development`](https://github.com/condensate-io/verified-agentic-development) |
 
 **Core** answers: *What does the agent know, and why?*  
+**TurboQuant Qdrant** answers: *How fast can we retrieve and score embeddings at scale?*  
 **VAD** answers: *What did the agent change, under what policy, with what proof, and who approved it?*
 
-Together they form a stack where delivery evidence and retrospective learnings can flow into durable memory.
+Together they form a stack where vector retrieval, delivery evidence, and retrospective learnings reinforce durable agent memory.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -67,6 +70,12 @@ Together they form a stack where delivery evidence and retrospective learnings c
                     │  Condensate Core        │
                     │  graph · provenance     │
                     │  consolidation · MCP    │
+                    └───────────┬─────────────┘
+                                │ embeddings · hybrid retrieval
+                    ┌───────────▼───────────┐
+                    │  TurboQuant Qdrant      │
+                    │  Condensate integration │
+                    │  FastScan · AVX2 · HNSW │
                     └─────────────────────────┘
 ```
 
@@ -182,6 +191,64 @@ See the [Condensate Integration Guide](https://github.com/condensate-io/verified
 
 ---
 
+## TurboQuant Qdrant — Condensate's Vector Retrieval Engine
+
+[condensate-io/qdrant](https://github.com/condensate-io/qdrant) is **Condensate engineering work**: we forked Qdrant v1.18.2 and integrated Google's **TurboQuant** extreme quantization (4-bit, 2-bit, and 1-bit modes), then built the SIMD FastScan kernels, QJL residual correction, and in-kernel threshold filtering that drive the benchmark gains below. This is not upstream Qdrant — it is our performance path for agent-scale embedding retrieval.
+
+### What We Implemented
+
+- **FastScan block-transposed layout** — groups vectors into 32-vector blocks for AVX2 cache locality and coalesced memory loads.
+- **SIMD multi-query scoring** — parallel distance accumulation in 256-bit registers instead of scalar loops.
+- **QJL residual correction** — 1-bit Quantized Johnson–Lindenstrauss projection to recover quantization accuracy.
+- **SIMD thresholding and in-kernel filtering** — fuses priority-queue threshold checks into AVX2 kernels to reduce branch overhead during HNSW candidate evaluation.
+- **Dynamic density fallback** — protects sparse/random batch access patterns from block-scoring overhead by falling back to point-wise scoring when block density is low.
+
+### Benchmark Highlights
+
+Full methodology and tables live in [docs/BENCHMARKS.md](https://github.com/condensate-io/qdrant/blob/dev/docs/BENCHMARKS.md). Summary against Qdrant v1.18.2 baseline on 10,000 vectors with 4-bit TurboQuant (`Bits4`), Criterion.rs, AVX2:
+
+| Access pattern | Best result | Notes |
+|---|---|---|
+| **Dense (contiguous) batch scoring** | **1.82x speedup** at dim 128, batch 32 | Up to **1.65x** at batch 256; strong gains on plain-index / linear scan paths |
+| **Sparse (random) batch scoring** | overhead without fallback | Block layout evaluates full 32-vector blocks; density heuristic recommended before FastScan |
+
+Representative dense results (latency vs baseline):
+
+| Dimension | Batch | Speedup |
+|---|---|---|
+| 128 | 32 | **1.82x** (−45% latency) |
+| 128 | 1024 | **1.61x** (−38% latency) |
+| 768 | 32 | **1.15x** (−13% latency) |
+
+### Get Qdrant Running
+
+```bash
+git clone https://github.com/condensate-io/qdrant
+cd qdrant
+docker run -p 6333:6333 qdrant/qdrant
+```
+
+Build and benchmark locally (see [docs/DEVELOPMENT.md](https://github.com/condensate-io/qdrant/blob/dev/docs/DEVELOPMENT.md)):
+
+```bash
+cargo test -p quantization
+cargo bench -p quantization --bench turboquant_bench
+```
+
+Key docs in the Qdrant fork:
+
+| Doc | Description |
+|---|---|
+| [Benchmark Report](https://github.com/condensate-io/qdrant/blob/dev/docs/BENCHMARKS.md) | TurboQuant dense vs sparse scoring analysis |
+| [Development Guide](https://github.com/condensate-io/qdrant/blob/dev/docs/DEVELOPMENT.md) | Build, Docker gates, and profiling conventions |
+| [Implementation Tracker](https://github.com/condensate-io/qdrant/blob/dev/implementation_tracker.md) | Tranche status and recovery checkpoints |
+
+### TurboQuant Qdrant + Core Together
+
+Condensate Core's memory router combines graph traversal with vector search. Our TurboQuant Qdrant fork is the performance path for embedding retrieval at scale — especially when collections use TurboQuant compression and workloads include dense plain-index scans or HNSW graph traversal with in-kernel threshold filtering.
+
+---
+
 ## SDKs (Condensate Core)
 
 | SDK | Install | Docs |
@@ -227,6 +294,14 @@ See the [Condensate Integration Guide](https://github.com/condensate-io/verified
 | [Level 4 Operator Guide](https://github.com/condensate-io/verified-agentic-development/blob/main/docs/level4-operator.md) | Operator workflows and recovery |
 | [MCP Gateway Audit](https://github.com/condensate-io/verified-agentic-development/blob/main/docs/mcp-gateway-security-audit.md) | Tool visibility and high-risk controls |
 
+### Qdrant (TurboQuant) Docs
+
+| Page | Description |
+|------|-------------|
+| [Benchmark Report](https://github.com/condensate-io/qdrant/blob/dev/docs/BENCHMARKS.md) | FastScan dense/sparse scoring results and analysis |
+| [Development Guide](https://github.com/condensate-io/qdrant/blob/dev/docs/DEVELOPMENT.md) | Build, test, and benchmark workflow |
+| [Implementation Tracker](https://github.com/condensate-io/qdrant/blob/dev/implementation_tracker.md) | Tranche 1–4 status and QA gates |
+
 ---
 
 ## Links
@@ -235,6 +310,7 @@ See the [Condensate Integration Guide](https://github.com/condensate-io/verified
 |---|---|
 | **Website** | [https://www.condensate.io](https://www.condensate.io) |
 | **Condensate Core** | [https://github.com/condensate-io/core](https://github.com/condensate-io/core) |
+| **Qdrant (TurboQuant fork)** | [https://github.com/condensate-io/qdrant](https://github.com/condensate-io/qdrant) |
 | **Verified Agentic Development** | [https://github.com/condensate-io/verified-agentic-development](https://github.com/condensate-io/verified-agentic-development) |
 | **Core Wiki** | [https://github.com/condensate-io/core/wiki](https://github.com/condensate-io/core/wiki) |
 | **LinkedIn** | [https://www.linkedin.com/company/condensate-io/](https://www.linkedin.com/company/condensate-io/) |
@@ -244,7 +320,7 @@ See the [Condensate Integration Guide](https://github.com/condensate-io/verified
 
 <div align="center">
 
-**Standardizing the brain and the governance loop of AI agents.**
+**Standardizing the brain, the retrieval layer, and the governance loop of AI agents.**
 
 🇦🇺 Built in Melbourne, Australia · Open source · Apache 2.0
 
